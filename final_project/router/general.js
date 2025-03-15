@@ -7,16 +7,17 @@ const public_users = express.Router();
 
 public_users.post("/register", (req,res) => {
   const username = req.body.username;
-  if (username) {
-    if (users[username]) {
-      return res.status(409).json({ message: "User already exists" });
+  const password = req.body.password;
+
+
+  if (username && password) {
+    if (!isValid(username)) {
+      users.push({ "username": username, "password": password });
+      return res.status(200).json({ message: "User successfully registered. Now you can login" });
+    } else {
+      return res.status(404).json({ message: "User already exists!" });
     }
-    users[username] = {
-        "username": username,
-        "password": req.body.password,
-      }
-    res.send("The user" + (' ') + (username) + ' has been added')
-    }
+  }
   return res.status(400).send("Username is required.");
 });
 
