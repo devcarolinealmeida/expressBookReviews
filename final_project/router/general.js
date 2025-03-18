@@ -22,28 +22,87 @@ public_users.post("/register", (req,res) => {
 });
 
 // Get the book list available in the shop
-public_users.get('/',function (req, res) {
+/* public_users.get('/',function (req, res) {
   return res.send(JSON.stringify(books, null, 4));
+}); */
+
+// Get the book list available in the shop using Promise callbacks
+public_users.get('/', function (req, res) {
+  new Promise((resolve, reject) => {
+    if (books) {
+      resolve(books);
+    } else {
+      reject("No books available");
+    }
+  })
+    .then((booksData) => res.send(JSON.stringify(booksData, null, 4)))
+    .catch((err) => res.status(500).send(err));
 });
 
+
 // Get book details based on ISBN
-public_users.get('/isbn/:isbn',function (req, res) {
+/* public_users.get('/isbn/:isbn',function (req, res) {
   const isbn = req.params.isbn;
   return res.send(JSON.stringify(books[isbn], null, 4));
- });
+ }); */
+
+ // Get book details based on ISBN using Promise callbacks
+ public_users.get('/isbn/:isbn', function (req, res) {
+  const isbn = req.params.isbn;
+  new Promise((resolve, reject) => {
+    if (books[isbn]) {
+      resolve(books[isbn]);
+    } else {
+      reject("Book not found");
+    }
+  })
+    .then((bookData) => res.send(JSON.stringify(bookData, null, 4)))
+    .catch((err) => res.status(500).send(err));
+});
+
+
   
 // Get book details based on author
-public_users.get('/author/:author',function (req, res) {
+/* public_users.get('/author/:author',function (req, res) {
   const author = req.params.author;
   let booksByAuthor = Object.values(books).filter(book => book.author === author);
   return res.send(JSON.stringify(booksByAuthor));
-});
+}); */
+
+// Get book details based on author using Promise callbacks
+public_users.get('/author/:author', function (req, res) {
+  const author = req.params.author;
+  new Promise((resolve, reject) => {
+    const booksByAuthor = Object.values(books).filter(book => book.author === author);
+    if (booksByAuthor.length > 0) {
+      resolve(booksByAuthor);
+    } else {
+      reject("No books found for the author");
+    }})
+    .then((booksByAuthor) => res.send(JSON.stringify(booksByAuthor, null, 4)))
+    .catch((err) => res.status(500).send(err));
+  })
 
 // Get all books based on title
-public_users.get('/title/:title',function (req, res) {
+/* public_users.get('/title/:title',function (req, res) {
   const title = req.params.title;
   let booksByTitle = Object.values(books).filter(book => book.title === title);
   return res.send(JSON.stringify(booksByTitle));
+});*/
+
+// Get all books based on title using Promise callbacks
+public_users.get('/title/:title', function (req, res) {
+  const title = req.params.title;
+  new Promise((resolve, reject) => {
+    const booksByTitle = Object.values(books).filter(book => book.title === title);
+    if (booksByTitle.length > 0) {
+      resolve(booksByTitle);
+    } else {
+      reject("No books found for the title");
+    }
+  })
+    .then((booksByTitle) => res.send(JSON.stringify(booksByTitle, null, 4)))
+    .catch((err) => res.status(500).send(err));
 });
 
 //  Get book review
